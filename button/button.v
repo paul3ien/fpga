@@ -1,6 +1,6 @@
 module button #(
-    parameter CLK_FREQ_HZ = 50_000_000,
-    parameter DEBOUNCE_MS = 10
+    parameter CLK_FREQ_HZ = 1_000_000,
+    parameter DEBOUNCE_MS = 1
 )
 (
     input  wire       clk,
@@ -15,7 +15,8 @@ reg[NBR_BITS-1:0] timer; // Timer du cycle d'ecoute pour le debonce
 
 reg state_button; // Etat stable du bouton
 reg last_state_button;
-reg[1:0] sync_state;
+reg[1:0] sync_state; // Etat de synchronisation
+
 
 // Synchronisation du bouton (boucle initiale)
 
@@ -23,7 +24,7 @@ always @(posedge clk) begin
     if (reset)
         sync_state <= 2'b00;
     else
-        sync_state = {sync_state[0],button};
+        sync_state <= {sync_state[0],button};
 end
 
 
