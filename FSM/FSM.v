@@ -16,9 +16,10 @@ localparam STATE_RED    = 2'b10;
 assign GREEN  = (state == STATE_GREEN);
 assign ORANGE = (state == STATE_ORANGE);
 assign RED    = (state == STATE_RED);
-localparam GREEN_DURATION  = 4'd10;
-localparam ORANGE_DURATION = 4'd3;
-localparam RED_DURATION    = 4'd10;
+localparam GREEN_DURATION  = 4;
+localparam ORANGE_DURATION = 2;
+localparam RED_DURATION    = 4;
+
 
 //Registre d'etat
 always @(posedge clk) begin
@@ -62,7 +63,7 @@ always @(posedge clk) begin
         if (next_state != state)
             counter <=0;
         else
-            counter = counter + 1;
+            counter <= counter + 1;
     end
 
 end
