@@ -42,6 +42,17 @@ surfer counter.vcd
 (`.vvp`), que `vvp` exécute. Le testbench écrit les signaux dans un fichier
 `.vcd` à l'aide de `$dumpfile` / `$dumpvars`, et Surfer affiche ce fichier.
 
+### Raccourci
+
+Le script `run.sh` enchaîne les trois étapes pour un projet donné :
+
+```sh
+./run.sh counter
+```
+
+Il compile tous les `.v` du dossier, lance la simulation et ouvre le `.vcd`
+dans Surfer.
+
 ## Ajouter un projet
 
 1. Créer un dossier, par exemple `mon_module/`.
@@ -51,4 +62,13 @@ surfer counter.vcd
 
 ## Projets
 
+**Réalisé :**
+
 - `counter/` — compteur 4 bits avec reset synchrone.
+
+**À venir** (dossiers prêts à l'emploi) :
+
+- *Bases* : `blinking_light`, `chaser_light`, `button`
+- *Affichage* : `screen_7seg`, `VGA`
+- *Logique & mémoire* : `ALU`, `RAM`, `FIFO`, `FSM`, `CPU_8bit`, `RISC_V`, `SoC`
+- *Communication* : `UART_RX`, `UART_TX`, `terminal_UART`, `SPI`

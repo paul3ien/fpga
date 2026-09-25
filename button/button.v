@@ -33,13 +33,13 @@ end
 
 always @(posedge clk) begin
     if (reset) begin
-        timer      <= 0;
+        timer <= 0;
         state_button <= 1'b0;
     end else begin
 
         // Si le signal d'entree est different de l'etat stable
         if (sync_state[1] != state_button) begin
-            if (timer <=NBR_CYCLE-1) begin
+            if (timer <= NBR_CYCLE-1) begin
                 timer <= timer + 1'b1;
             end
             // Le signal est reste stable pendant pendant la duree du DEBOUNCE_MS

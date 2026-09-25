@@ -30,27 +30,64 @@ module button_tb;
         reset = 1;
 
         #100;
-        button = 1;
-        #2;
-        button = 0;
-        #2;
-        button = 1;
-        #3;
-        button = 0;
-        #2;
-        button = 1;
-
-        // Maintenant il reste vraiment appuyé
-        #50;
-        button = 0;
-
-        // Libérer le compteur
         reset = 0;
 
+        // Appuis avec rebond
+
+        #1000;
+
+        button = 1;
+        #30;
+        button = 0;
+        #20;
+        button = 1;
+        #40;
+        button = 0;
+        #30;
+        button = 1;
+
+        // Le bouton est maintenant réellement appuyé
+        #20_000;
+
+        // Relâchement
+        button = 0;
+
+
+        // Appuis avec rebond
+
+        button = 1;
+        #20;
+        button = 0;
+        #30;
+        button = 1;
+        #20;
+        button = 0;
+        #40;
+        button = 1;
+
+        // Bouton maintenu
+        #20_000;
+
+        // Relâchement
+        button = 0;
+
         // Laisser tourner pendant 160 ns
-        #160;
+        #10_000;
 
         $finish;
+    end
+
+    initial begin
+            $monitor(
+                "t=%0t | button=%b | sync=%b | stable=%b | last=%b | timer=%d | count=%d",
+                $time,
+                button,
+                dut.sync_state,
+                dut.state_button,
+                dut.last_state_button,
+                dut.timer,
+                count
+        );
     end
 
 endmodule
