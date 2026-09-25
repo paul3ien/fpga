@@ -1,0 +1,13 @@
+# Artefacts de compilation et de simulation
+*.vvp
+*.out
+
+# Fichiers d'ondes (VCD / FST)
+*.vcd
+*.fst
+
+# Fichiers de projet Surfer
+*.su*
+
+# Divers
+*.log
