@@ -14,10 +14,14 @@ module pwm #(
 // Boucle comparateur
 
 always @(posedge clk) begin
-    if (count<duty_cycle)
-        signal = 4'b1111;
-    else
-        signal = 4'b0000;
+    if (reset)
+        signal <=4'b0000;
+    else begin
+        if (count<duty_cycle)
+            signal <= 4'b1111;
+        else
+            signal <= 4'b0000;
+    end
 end
 
 
