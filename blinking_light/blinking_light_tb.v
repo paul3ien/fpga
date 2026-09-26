@@ -6,7 +6,10 @@ module blinking_tb;
     reg reset;
     wire  light;
 
-    blinking dut (
+    blinking #(
+            .CLK_FREQ_HZ(100_000_000),
+            .CLOCK_DIVIDER(10_000_000)
+    ) dut (
         .clk(clk),
         .reset(reset),
         .light(light)
@@ -32,6 +35,17 @@ module blinking_tb;
         #160;
 
         $finish;
+    end
+    initial begin
+            $monitor(
+                "t=%0t | reset=%b | state=%b | next=%b | timer=%d | light=%b",
+                $time,
+                reset,
+                dut.state,
+                dut.next_state,
+                dut.timer,
+                light
+            );
     end
 
 endmodule

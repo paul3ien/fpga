@@ -20,7 +20,7 @@ localparam NBR_BITS = $clog2(HALF_PERIOD+1);
 reg[NBR_BITS-1:0] timer;
 assign light = (state == ON);
 
-// Initialisation
+// Initialisation - Registre d'etat
 
 always @(posedge clk) begin
     if (reset)
@@ -30,10 +30,10 @@ always @(posedge clk) begin
 end
 
 
-// Boucle logique
+// Boucle logique - FSM
 
 always @(*) begin
-    next_state <= state;
+    next_state = state;
     case (state)
         ON:
             begin
@@ -51,7 +51,7 @@ always @(*) begin
     endcase
 end
 
-//Boucle counter
+//Boucle timer
 
 always @(posedge clk) begin
     if (reset) begin
