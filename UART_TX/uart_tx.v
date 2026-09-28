@@ -24,7 +24,6 @@ localparam STOP = 2'b11;
 reg[1:0] state;
 reg[2:0] index;
 reg[7:0] buffer;
-reg impulsion;
 
 // Bloc FSM
 always @(posedge clk) begin
