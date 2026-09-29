@@ -10,7 +10,7 @@ module uart_tx #(
     output reg[7:0]   tx
 );
 
-localparam HALF_PERIOD = CLK_FREQ_HZ / (2 * BAUD_RATE);
+localparam HALF_PERIOD = CLK_FREQ_HZ / BAUD_RATE;
 localparam NBR_BITS = $clog2(HALF_PERIOD+1);
 reg[NBR_BITS-1:0] timer;
 
@@ -45,15 +45,16 @@ always @(posedge clk) begin
                 index <=0;
                 if(start) begin
                     buffer<=data; // On injecte les donnees dans un buffer
+                    busy   <= 1'b1;
                     state = START;
-                end
+                end else
+                busy <= 1'b0;
             end
 
         // Cas du debut de l'envoi
         START:
             begin
                 tx <=1'b0;
-                busy <=1;
                 if (timer == HALF_PERIOD-1) begin
                     timer<=0;
                     state <= DATA;
@@ -68,7 +69,6 @@ always @(posedge clk) begin
         DATA :
             begin
                 tx <=buffer[index];
-                busy <=1;
                 if (timer == HALF_PERIOD-1) begin
                     timer<=0;
                     if (index == 3'd7) begin
@@ -83,7 +83,7 @@ always @(posedge clk) begin
             end
         STOP:
             begin
-                tx <=1'b0;
+                tx <=1'b1;
                 if (timer == HALF_PERIOD-1) begin
                     timer<=0;
                     busy <=1'b0;
