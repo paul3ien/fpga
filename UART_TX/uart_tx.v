@@ -7,7 +7,7 @@ module uart_tx #(
     input  wire[7:0]  data,
     input  wire       start, // Impulsion pour lancer l'envoi
     output reg        busy, // Transmition en cours = 1
-    output reg[7:0]   tx
+    output reg        tx
 );
 
 localparam HALF_PERIOD = CLK_FREQ_HZ / BAUD_RATE;
@@ -22,7 +22,7 @@ localparam DATA = 2'b10;
 localparam STOP = 2'b11;
 
 reg[1:0] state;
-reg[2:0] index;
+reg[3:0] index;
 reg[7:0] buffer;
 
 // Bloc FSM
