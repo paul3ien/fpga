@@ -9,7 +9,7 @@ module uart_parser #(parameter MAX_LEN = 16)
 
     // Cote LOGIC
     output reg logic_valid,
-    output reg [7:0] logic_buffer [0:MAX_LEN-1], // Tableau du paquet
+    output reg [MAX_LEN*8-1:0] logic_buffer, // Paquet (vecteur empaqueté, supporté par Yosys)
     output reg [3:0] logic_len
 );
 
@@ -32,7 +32,7 @@ always @(posedge clk) begin
                 logic_valid <= 1;
                 ptr <=0;
             end else if (ptr < MAX_LEN) begin
-                logic_buffer[ptr]<=rx_data;
+                logic_buffer[ptr*8 +: 8]<=rx_data;
                 ptr <= ptr + 1;
             end
         end

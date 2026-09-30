@@ -31,8 +31,9 @@ if [[ ${#sources[@]} -eq 0 ]]; then
 fi
 
 # 2. Compilation
+#    -g2012 : active le SystemVerilog (nécessaire pour les ports tableaux du parser)
 echo "==> Compilation ($nom) : ${sources[*]}"
-iverilog -o "$nom.vvp" "${sources[@]}"
+iverilog -g2012 -o "$nom.vvp" "${sources[@]}"
 
 # 3. Simulation (génère le(s) fichier(s) .vcd)
 echo "==> Simulation"

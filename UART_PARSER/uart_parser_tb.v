@@ -9,7 +9,7 @@ module uart_parser_tb;
     reg        rx_done;
     reg  [7:0] rx_data;
     wire       logic_valid;
-    wire [7:0] logic_buffer [0:MAX_LEN-1];
+    wire [MAX_LEN*8-1:0] logic_buffer;
     wire [3:0] logic_len;
 
     uart_parser #(
@@ -71,7 +71,7 @@ module uart_parser_tb;
                      logic_valid, logic_len);
 
         for (i = 0; i < logic_len; i = i + 1)
-            $display("  buffer[%0d] = 0x%02X", i, logic_buffer[i]);
+            $display("  buffer[%0d] = 0x%02X", i, logic_buffer[i*8 +: 8]);
 
         #100;
         $finish;

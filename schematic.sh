@@ -53,7 +53,7 @@ yosys_cmds="$yosys_cmds write_json netlist.json"
 
 # 3. Synthèse JSON avec Yosys
 echo "==> Extraction de la netlist avec Yosys..."
-yosys -p "$yosys_cmds" >/dev/null 2>&1
+yosys -p "$yosys_cmds"
 
 # 4. Génération du SVG avec netlistsvg
 echo "==> Génération du SVG avec netlistsvg..."
