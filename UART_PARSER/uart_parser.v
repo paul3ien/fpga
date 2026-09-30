@@ -26,11 +26,13 @@ always @(posedge clk) begin
         // Signal d'impulsion
         logic_valid <=0;
         if (rx_done) begin
-            // Ligne '\n'
-            if (rx_data == 8'h04) begin
+            // Fin de ligne : '\n' (0x0A). Le '\r' (0x0D) est ignoré (retours CRLF).
+            if (rx_data == 8'h0A) begin
                 logic_len <= ptr;
                 logic_valid <= 1;
                 ptr <=0;
+            end else if (rx_data == 8'h0D) begin
+                // '\r' ignoré
             end else if (ptr < MAX_LEN) begin
                 logic_buffer[ptr*8 +: 8]<=rx_data;
                 ptr <= ptr + 1;

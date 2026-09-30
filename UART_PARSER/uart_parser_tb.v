@@ -60,7 +60,7 @@ module uart_parser_tb;
         send_byte(8'h6C);                // 'l'
         send_byte(8'h6C);                // 'l'
         send_byte(8'h6F);                // 'o'
-        send_byte(8'h04);                // terminateur
+        send_byte(8'h0A);                // '\n' -> termine le paquet
 
         wait (logic_valid);              // attend l'impulsion de fin de paquet
 
