@@ -1,5 +1,5 @@
 module ram #(
-    parameter DATA_WIDTH = 12,               //Largeur des données en octets
+    parameter DATA_WIDTH = 12,          //Largeur des données en octets
     parameter ADDR_WIDTH = 1,           //Nombre d'adresses totales = 2^ADDR_WIDTH
     parameter DEPTH = (1 << ADDR_WIDTH)
 )(
