@@ -2,13 +2,7 @@
 
 module uart_parser_tb;
 
-    // Doivent correspondre aux paramètres du DUT et à l'horloge ci-dessous
-    localparam CLK_FREQ_HZ  = 100_000_000;              // 100 MHz (période 10 ns)
-    localparam BAUD_RATE    = 115_200;
-    localparam CLKS_PER_BIT = CLK_FREQ_HZ / BAUD_RATE;  // ~868 cycles par bit
     localparam MAX_LEN = 16;
-
-    localparam [7:0] TEST_BYTE = 8'hA5;
 
     reg        clk;
     reg        reset;
@@ -23,67 +17,61 @@ module uart_parser_tb;
     ) dut (
         .clk(clk),
         .reset(reset),
-
-        // Cote RX
         .rx_done(rx_done),
         .rx_data(rx_data),
-
-        // Cote LOGIC
         .logic_valid(logic_valid),
-        .logic_buffer(logic_buffer), // Tableau du paquet
+        .logic_buffer(logic_buffer),
         .logic_len(logic_len)
     );
 
     // Horloge : période de 10 ns
     always #5 clk = ~clk;
 
-    // Émet un bit sur la ligne, maintenu CLKS_PER_BIT cycles
-    task send_bit;
-        input b;
-        integer i;
-        begin
-            data = b;
-            for (i = 0; i < CLKS_PER_BIT; i = i + 1)
-                @(posedge clk);
-        end
-    endtask
-
-    // Émet une trame UART : start + 8 bits de données (LSB d'abord) + stop
+    // Présente un octet au parser et pulse rx_done pendant 1 cycle
     task send_byte;
         input [7:0] b;
-        integer i;
         begin
-            send_bit(1'b0);              // bit de start
-            for (i = 0; i < 8; i = i + 1)
-                send_bit(b[i]);          // données, LSB en premier
-            send_bit(1'b1);              // bit de stop
+            @(negedge clk);
+            rx_data = b;
+            rx_done = 1'b1;
+            @(negedge clk);
+            rx_done = 1'b0;
         end
     endtask
 
+    integer i;
     initial begin
         // Enregistrer les signaux pour Surfer
         $dumpfile("uart_parser.vcd");
         $dumpvars(0, uart_parser_tb);
 
-        clk   = 0;
-        reset = 1;
-        data  = 1'b1;                    // ligne au repos
+        clk     = 0;
+        reset   = 1;
+        rx_done = 0;
+        rx_data = 8'h00;
 
         repeat (10) @(posedge clk);      // maintenir le reset
         reset = 0;
-        repeat (10) @(posedge clk);      // laisser le synchroniseur se stabiliser
+        repeat (2) @(posedge clk);
 
-        // Envoyer une trame de test
-        send_byte(TEST_BYTE);
+        // Paquet de test : "Hello"
+        send_byte(8'h48);                // 'H'
+        send_byte(8'h65);                // 'e'
+        send_byte(8'h6C);                // 'l'
+        send_byte(8'h6C);                // 'l'
+        send_byte(8'h6F);                // 'o'
+        send_byte(8'h04);                // terminateur
 
-        // Attendre la fin de la réception
-        wait (done);
-        #20;
+        wait (logic_valid);              // attend l'impulsion de fin de paquet
 
-        if (rx === TEST_BYTE)
-            $display("OK     : rx = 0x%02X (attendu 0x%02X)", rx, TEST_BYTE);
+        if (logic_len == 4'd5)
+            $display("OK     : logic_valid=1, logic_len=%0d", logic_len);
         else
-            $display("ERREUR : rx = 0x%02X (attendu 0x%02X)", rx, TEST_BYTE);
+            $display("ERREUR : logic_valid=%b, logic_len=%0d (attendu 1 et 5)",
+                     logic_valid, logic_len);
+
+        for (i = 0; i < logic_len; i = i + 1)
+            $display("  buffer[%0d] = 0x%02X", i, logic_buffer[i]);
 
         #100;
         $finish;
@@ -91,8 +79,8 @@ module uart_parser_tb;
 
     // Garde-fou : évite une simulation infinie
     initial begin
-        #2_000_000;                      // 2 ms
-        $display("TIMEOUT : 'done' non reçu");
+        #2_000_000;
+        $display("TIMEOUT");
         $finish;
     end
 

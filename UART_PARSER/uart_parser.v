@@ -1,4 +1,4 @@
-module parser #(parameter MAX_LEN = 16)
+module uart_parser #(parameter MAX_LEN = 16)
 (
     input wire clk,
     input wire reset,
@@ -31,7 +31,7 @@ always @(posedge clk) begin
                 logic_len <= ptr;
                 logic_valid <= 1;
                 ptr <=0;
-            end else if (rx_data < MAX_LEN) begin
+            end else if (ptr < MAX_LEN) begin
                 logic_buffer[ptr]<=rx_data;
                 ptr <= ptr + 1;
             end
