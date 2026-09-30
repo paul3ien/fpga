@@ -9,8 +9,8 @@ module parser #(parameter MAX_LEN = 16)
 
     // Cote LOGIC
     output reg logic_valid,
-    output reg [7:0] logic_buffer,
-    output reg logic_len
+    output reg [7:0] logic_buffer [0:MAX_LEN-1], // Tableau du paquet
+    output reg [3:0] logic_len
 );
 
 reg [3:0] ptr;
@@ -23,11 +23,12 @@ always @(posedge clk) begin
         logic_valid <=0;
         logic_len <=0;
     end else begin
-        ptr <=0;
+        // Signal d'impulsion
+        logic_valid <=0;
         if (rx_done) begin
             // Ligne '\n'
             if (rx_data == 8'h04) begin
-                logic_buffer <= ptr;
+                logic_len <= ptr;
                 logic_valid <= 1;
                 ptr <=0;
             end else if (rx_data < MAX_LEN) begin
