@@ -16,13 +16,6 @@ localparam FULL_PERIOD = HALF_PERIOD*2;
 localparam NBR_BITS = $clog2(FULL_PERIOD+1);
 reg[NBR_BITS-1:0] timer;
 
-// BLoc du timer
-
-always @(clk) begin
-
-end
-
-
 // Variable pour la synchronisation
 
 reg sync_0;
@@ -49,7 +42,7 @@ localparam DATA = 2'b10;
 localparam STOP = 2'b11;
 
 reg[1:0] state;
-reg[3:0] index;
+reg[2:0] index;
 reg[7:0] buffer;
 
 // Bloc FSM
@@ -60,6 +53,8 @@ always @(posedge clk) begin
         done <=0;
         timer <= 0;
         index <=0;
+        rx     <= 8'h00;
+        buffer <= 8'h00;
     end
     case (state)
 
@@ -71,7 +66,6 @@ always @(posedge clk) begin
                     timer <= 0;
                     index <=0;
                     state <= START;
-
                 end
             end
 
@@ -82,6 +76,8 @@ always @(posedge clk) begin
                     if (sync_1 ==0) begin
                         timer<=0;
                         state <=DATA;
+                    end else begin
+                        state <= IDLE;
                     end
                 end else begin
                     timer <= timer + 1;
