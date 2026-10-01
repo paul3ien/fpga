@@ -21,6 +21,9 @@ module vga_tb;
         .rgb   (rgb)
     );
 
+    integer file;
+    integer frame_count = 0;
+
     initial begin
             $dumpfile("vga_top_tb.vcd");
             $dumpvars(0, vga_tb);
@@ -39,6 +42,26 @@ module vga_tb;
             wait (dut.pixel_x == 650);
             #1;
             $display("[%0t ns] Pixel (650, 160) -> RGB: %b (Attendu: 000 - Masque Blanking)", $time, rgb);
+
+            file = $fopen("output_frame.ppm", "w");
+            $fwrite(file, "P3\n640 480\n255\n");
+            while (dut.pixel_y < 480) begin
+                @(posedge clk);
+                if (dut.video_on) begin
+                    // Extraction des composantes R, G, B (1 bit chacune -> 0 ou 255)
+                    $fwrite(file, "%d %d %d ",
+                        dut.rgb[2] ? 255 : 0,  // Red
+                        dut.rgb[1] ? 255 : 0,  // Green
+                        dut.rgb[0] ? 255 : 0   // Blue
+                    );
+                end
+
+                // Retour à la ligne dans le fichier PPM à chaque fin de ligne VGA
+                if (dut.pixel_x == 639 && dut.video_on) begin
+                    $fwrite(file, "\n");
+                end
+            end
+            $fclose(file);
 
             #1000;
             $finish;
