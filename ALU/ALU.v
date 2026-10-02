@@ -48,12 +48,12 @@ always @(*) begin
         SHIFT_G : begin
             buffer <= A<<B[2:0];
         end
-        default: buffer= {DATA_WIDTH{0}};
+        default: buffer= {DATA_WIDTH{1'b0}};
     endcase
     result = buffer;
 end
 
 // Renvoi 1 quand le résultat est nul
-assign zero = {DATA_WIDTH{0}};
+assign zero = {DATA_WIDTH{1'b0}};
 
 endmodule
