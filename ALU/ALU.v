@@ -54,6 +54,6 @@ always @(*) begin
 end
 
 // Renvoi 1 quand le résultat est nul
-assign zero = {DATA_WIDTH{1'b0}};
+assign zero = (result == {DATA_WIDTH{1'b0}});
 
 endmodule
