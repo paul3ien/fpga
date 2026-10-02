@@ -23,6 +23,7 @@ module vga_tb;
 
     integer file;
     integer frame_count = 0;
+    integer row, col;
 
     initial begin
             $dumpfile("vga_top_tb.vcd");
@@ -43,11 +44,15 @@ module vga_tb;
             #1;
             $display("[%0t ns] Pixel (650, 160) -> RGB: %b (Attendu: 000 - Masque Blanking)", $time, rgb);
 
+            // Attendre le début d'une nouvelle image (haut de trame)
+            wait (dut.pixel_y == 0 && dut.pixel_x == 0);
+
             file = $fopen("output_frame.ppm", "w");
             $fwrite(file, "P3\n640 480\n255\n");
-            while (dut.pixel_y < 480) begin
-                @(posedge clk);
-                if (dut.video_on) begin
+
+            for (row = 0; row < 480; row = row + 1) begin
+                for (col = 0; col < 640; col = col + 1) begin
+                    @(negedge clk);   // échantillonne au centre du pixel courant
                     // Extraction des composantes R, G, B (1 bit chacune -> 0 ou 255)
                     $fwrite(file, "%d %d %d ",
                         dut.rgb[2] ? 255 : 0,  // Red
@@ -55,11 +60,10 @@ module vga_tb;
                         dut.rgb[0] ? 255 : 0   // Blue
                     );
                 end
+                $fwrite(file, "\n");
 
-                // Retour à la ligne dans le fichier PPM à chaque fin de ligne VGA
-                if (dut.pixel_x == 639 && dut.video_on) begin
-                    $fwrite(file, "\n");
-                end
+                // Attendre le début de la ligne suivante
+                wait (dut.pixel_x == 0);
             end
             $fclose(file);
 
